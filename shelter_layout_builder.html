@@ -1,0 +1,1779 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Telecom Shelter Layout Builder</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #ffffff;
+        --surface: #ffffff;
+        --surface2: #f5f5f5;
+        --border: #e0e0e0;
+        --border2: #cccccc;
+        --text: #111111;
+        --text2: #555555;
+        --text3: #999999;
+        --accent: #ee2737;
+        --accent-dim: #c01e2a;
+        --accent-bg: rgba(238, 39, 55, 0.06);
+        --danger: #ee2737;
+        --danger-bg: rgba(238, 39, 55, 0.06);
+        --radius: 6px;
+        --radius-lg: 10px;
+        --mono: "IBM Plex Mono", monospace;
+        --sans: "IBM Plex Sans", sans-serif;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--text);
+        font-size: 18px;
+        line-height: 1.5;
+      }
+      .app {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-height: 100vh;
+      }
+      header {
+        border-bottom: 1px solid #c01e2a;
+        padding: 0 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 80px;
+        background: #ee2737;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .logo {
+        font-family: var(--mono);
+        font-size: 26px;
+        font-weight: 500;
+        color: #ffffff;
+        letter-spacing: 0.02em;
+      }
+      .header-subtitle {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.75);
+        font-family: var(--mono);
+      }
+      .main {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        height: calc(100vh - 80px);
+        overflow: hidden;
+      }
+      .builder {
+        overflow-y: auto;
+        padding: 28px 32px;
+        border-right: 1px solid var(--border);
+      }
+      .builder-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .builder-title {
+        font-size: 15px;
+        font-family: var(--mono);
+        color: #ee2737;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 500;
+      }
+      .io-section {
+        margin-bottom: 20px;
+      }
+      .io-title {
+        font-size: 12px;
+        font-family: var(--mono);
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+      .io-row {
+        display: flex;
+        gap: 8px;
+      }
+      .io-btn {
+        flex: 1;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius);
+        color: var(--text2);
+        cursor: pointer;
+        font-size: 13px;
+        font-family: var(--mono);
+        padding: 7px 10px;
+        transition: all 0.15s;
+        text-align: center;
+      }
+      .io-btn:hover {
+        color: var(--text);
+        background: var(--surface);
+        border-color: var(--text3);
+      }
+      .io-btn.accent {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+        background: var(--accent-bg);
+      }
+      .io-btn.accent:hover {
+        background: rgba(238, 39, 55, 0.12);
+      }
+      .shelter-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        margin-bottom: 16px;
+        overflow: hidden;
+        animation: fadeIn 0.2s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .shelter-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid #c01e2a;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #ee2737;
+      }
+      .shelter-index {
+        font-family: var(--mono);
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.6);
+        min-width: 20px;
+      }
+      .shelter-name-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        font-family: var(--sans);
+        font-size: 18px;
+        font-weight: 500;
+        outline: none;
+      }
+      .shelter-name-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .shelter-body {
+        padding: 16px 18px;
+      }
+      .zones-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 20px;
+      }
+      .zone-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .zone-name {
+        font-family: var(--mono);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 2px 8px;
+        border-radius: 99px;
+        font-weight: 500;
+      }
+      .zone-name.front {
+        background: rgba(238, 39, 55, 0.08);
+        color: #ee2737;
+      }
+      .zone-name.left {
+        background: rgba(0, 100, 200, 0.08);
+        color: #0055bb;
+      }
+      .zone-name.center {
+        background: rgba(140, 0, 180, 0.08);
+        color: #880099;
+      }
+      .zone-name.right {
+        background: rgba(180, 100, 0, 0.08);
+        color: #995500;
+      }
+      .zone-name.door {
+        background: rgba(0, 140, 80, 0.08);
+        color: #1a6b3c;
+      }
+      .add-item-btn {
+        background: none;
+        border: none;
+        color: var(--text3);
+        cursor: pointer;
+        font-size: 20px;
+        line-height: 1;
+        padding: 0 2px;
+        transition: color 0.15s;
+      }
+      .add-item-btn:hover {
+        color: var(--accent);
+      }
+      .item-row {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 6px;
+        align-items: flex-start;
+      }
+      .item-inputs {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .field {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 15px;
+        padding: 5px 8px;
+        width: 100%;
+        transition: border-color 0.15s;
+        outline: none;
+      }
+      .field::placeholder {
+        color: var(--text3);
+      }
+      .field:focus {
+        border-color: var(--border2);
+      }
+      .field.subitems {
+        color: var(--text2);
+        font-size: 14px;
+        font-family: var(--mono);
+      }
+      .remove-btn {
+        background: none;
+        border: none;
+        color: var(--text3);
+        cursor: pointer;
+        font-size: 18px;
+        padding: 5px 4px;
+        line-height: 1;
+        transition: color 0.15s;
+        flex-shrink: 0;
+      }
+      .remove-btn:hover {
+        color: var(--danger);
+      }
+      .empty-zone {
+        font-size: 14px;
+        color: var(--text3);
+        font-style: italic;
+        padding: 4px 0;
+      }
+      .shelter-footer {
+        padding: 10px 18px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+      }
+      .remove-shelter-btn {
+        background: none;
+        border: 1px solid transparent;
+        color: var(--text3);
+        cursor: pointer;
+        font-size: 15px;
+        font-family: var(--sans);
+        padding: 4px 10px;
+        border-radius: var(--radius);
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .remove-shelter-btn:hover {
+        color: var(--danger);
+        border-color: var(--danger-bg);
+        background: var(--danger-bg);
+      }
+      .add-shelter-btn {
+        width: 100%;
+        background: none;
+        border: 1px dashed var(--border2);
+        border-radius: var(--radius-lg);
+        color: var(--text3);
+        cursor: pointer;
+        padding: 14px;
+        font-family: var(--mono);
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.15s;
+      }
+      .add-shelter-btn:hover:not(:disabled) {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+        background: var(--accent-bg);
+      }
+      .add-shelter-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        width: 500px;
+        max-width: 90vw;
+      }
+      .modal-title {
+        font-family: var(--mono);
+        font-size: 14px;
+        color: var(--accent);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .modal-desc {
+        font-size: 14px;
+        color: var(--text2);
+        margin-bottom: 12px;
+      }
+      .modal-textarea {
+        width: 100%;
+        height: 220px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 13px;
+        padding: 10px;
+        resize: vertical;
+        outline: none;
+      }
+      .modal-textarea:focus {
+        border-color: var(--border2);
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+      .modal-btn {
+        background: none;
+        border: 1px solid var(--border2);
+        border-radius: var(--radius);
+        color: var(--text2);
+        cursor: pointer;
+        font-size: 14px;
+        font-family: var(--mono);
+        padding: 6px 16px;
+        transition: all 0.15s;
+      }
+      .modal-btn.primary {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+        background: var(--accent-bg);
+      }
+      .modal-btn:hover {
+        background: var(--surface2);
+      }
+      .modal-btn.primary:hover {
+        background: rgba(238, 39, 55, 0.12);
+      }
+      .error-msg {
+        color: var(--danger);
+        font-size: 13px;
+        font-family: var(--mono);
+        margin-top: 8px;
+        min-height: 20px;
+      }
+      .preview-panel {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--surface);
+      }
+      .preview-header {
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+      .preview-title {
+        font-family: var(--mono);
+        font-size: 14px;
+        color: #ee2737;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 500;
+      }
+      .preview-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .shelter-tabs {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 10px 20px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .shelter-tab {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text3);
+        cursor: pointer;
+        font-size: 13px;
+        font-family: var(--mono);
+        padding: 4px 12px;
+        white-space: nowrap;
+        transition: all 0.15s;
+      }
+      .shelter-tab.active {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+        background: var(--accent-bg);
+      }
+      .shelter-tab:hover:not(.active) {
+        color: var(--text2);
+        border-color: var(--border2);
+      }
+      .preview-area {
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 20px;
+        background: #eeeeee;
+      }
+      .preview-area canvas {
+        max-width: 100%;
+        border-radius: 4px;
+        display: block;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      }
+      .icon-btn {
+        background: none;
+        border: 1px solid var(--border2);
+        border-radius: var(--radius);
+        color: var(--text2);
+        cursor: pointer;
+        font-size: 12px;
+        font-family: var(--mono);
+        padding: 5px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .icon-btn:hover {
+        color: var(--text);
+        background: var(--surface2);
+      }
+      .icon-btn.primary {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+      }
+      .icon-btn.primary:hover {
+        background: var(--accent-bg);
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+      }
+      @media (max-width: 768px) {
+        header {
+          padding: 0 16px;
+          height: 60px;
+        }
+        .logo {
+          font-size: 18px;
+        }
+        .color-row label {
+          display: none;
+        }
+        .main {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto;
+          height: auto;
+          overflow: visible;
+        }
+        .builder {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+          padding: 16px;
+          height: auto;
+          overflow: visible;
+        }
+        .preview-panel {
+          height: 480px;
+        }
+        .zones-grid {
+          grid-template-columns: 1fr;
+        }
+        .preview-area {
+          padding: 12px;
+        }
+        .io-row {
+          flex-wrap: wrap;
+        }
+        .io-btn {
+          min-width: calc(50% - 4px);
+          flex: none;
+        }
+        .modal {
+          padding: 16px;
+        }
+        .preview-header {
+          padding: 10px 14px;
+        }
+        .shelter-tabs {
+          padding: 8px 14px;
+        }
+      }
+      .color-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .color-row label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: var(--mono);
+      }
+      input[type="color"] {
+        width: 28px;
+        height: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        background: none;
+        cursor: pointer;
+        padding: 2px;
+      }
+      .zone-full {
+        margin-bottom: 12px;
+      }
+      .cols-row {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        margin-bottom: 12px;
+      }
+      .col-zone {
+        min-width: 140px;
+        flex-shrink: 0;
+      }
+      .add-col-btn {
+        align-self: stretch;
+        background: none;
+        border: 1px dashed var(--border2);
+        border-radius: var(--radius);
+        color: var(--text3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        min-width: 22px;
+        flex-shrink: 0;
+        padding: 4px 2px;
+        transition: all 0.15s;
+        writing-mode: vertical-lr;
+      }
+      .add-col-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+        background: var(--accent-bg);
+      }
+      .dyn-col-name {
+        background: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: var(--text);
+        flex: 1;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        min-width: 0;
+        outline: none;
+        padding: 2px 4px;
+        text-transform: uppercase;
+      }
+      .dyn-col-name:focus {
+        border-color: var(--border2);
+      }
+      .zone-name.extra {
+        background: rgba(80, 80, 80, 0.08);
+        color: #555;
+      }
+      .subcols-area {
+        border-top: 1px dashed var(--border);
+        margin-top: 8px;
+        padding-top: 6px;
+      }
+      .subcol {
+        background: var(--surface2);
+        border-radius: var(--radius);
+        margin-bottom: 5px;
+        padding: 5px 7px;
+      }
+      .subcol-hdr {
+        align-items: center;
+        display: flex;
+        gap: 4px;
+        margin-bottom: 4px;
+      }
+      .add-sub-btn {
+        background: none;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        color: var(--text3);
+        cursor: pointer;
+        font-family: var(--mono);
+        font-size: 11px;
+        margin-top: 4px;
+        padding: 3px 6px;
+        transition: all 0.15s;
+        width: 100%;
+      }
+      .add-sub-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+        background: var(--accent-bg);
+      }
+      .add-sub-item-btn {
+        background: none;
+        border: none;
+        color: var(--text3);
+        cursor: pointer;
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 2px 0;
+        transition: color 0.15s;
+      }
+      .add-sub-item-btn:hover {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="header-left">
+          <span class="logo">Telecom Shelter Layout Builder</span>
+        </div>
+        <div class="color-row">
+          <label>heading color</label>
+          <input
+            type="color"
+            id="heading-color"
+            value="#F5C300"
+            oninput="onHeadingColorChange()"
+          />
+        </div>
+      </header>
+      <div class="main">
+        <div class="builder" id="builder">
+          <div class="builder-header">
+            <span class="builder-title">Shelters</span>
+          </div>
+          <div class="io-section">
+            <div class="io-title">Import / Export</div>
+            <div class="io-row">
+              <button class="io-btn" onclick="openImportModal()">
+                ⬆ import .txt
+              </button>
+              <button class="io-btn" onclick="downloadTxt()">
+                ⬇ export .txt
+              </button>
+              <button class="io-btn accent" onclick="downloadAllPngs()">
+                ⬇ all PNGs
+              </button>
+            </div>
+          </div>
+          <div id="shelters-container"></div>
+          <button
+            class="add-shelter-btn"
+            id="add-shelter-btn"
+            onclick="addShelter()"
+          >
+            + add shelter
+          </button>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-header">
+            <span class="preview-title">Preview</span>
+            <div class="preview-actions">
+              <button class="icon-btn primary" onclick="downloadPng()">
+                ⬇ download PNG
+              </button>
+            </div>
+          </div>
+          <div class="shelter-tabs" id="shelter-tabs"></div>
+          <div class="preview-area" id="preview-area">
+            <canvas id="preview-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="import-modal">
+      <div class="modal">
+        <div class="modal-title">Import .txt layout</div>
+        <div class="modal-desc">
+          Paste the contents of a layout .txt file exported from this app or the
+          original Python tool.
+        </div>
+        <textarea
+          class="modal-textarea"
+          id="import-textarea"
+          placeholder="Shelter 1&#10;--zone: front wall&#10;----AC1&#10;----PDU: A, B&#10;--zone: left wall&#10;----Rack 1: U1, U2, U3&#10;--zone: door wall&#10;----Fire Panel"
+        ></textarea>
+        <div class="error-msg" id="import-error"></div>
+        <div class="modal-actions">
+          <button class="modal-btn" onclick="closeImportModal()">cancel</button>
+          <button class="modal-btn primary" onclick="doImport()">import</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const ZONES = [
+        "front wall",
+        "left wall",
+        "center",
+        "right wall",
+        "door wall",
+      ];
+      const ZONE_CLASS = {
+        "front wall": "front",
+        "left wall": "left",
+        center: "center",
+        "right wall": "right",
+        "door wall": "door",
+      };
+      let shelters = [],
+        _id = 0,
+        activeShelterIdx = 0,
+        headingColor = "#F5C300";
+      const uid = () => ++_id;
+
+      function makeShelter(n) {
+        const s = {
+          id: uid(),
+          name: `Shelter ${n}`,
+          zones: {},
+          leftCenterCols: [],
+          centerRightCols: [],
+          subs: {},
+        };
+        ZONES.forEach((z) => (s.zones[z] = []));
+        return s;
+      }
+      function makeItem() {
+        return { id: uid(), label: "", subitems: "" };
+      }
+      function getShelter(sid) {
+        return shelters.find((s) => s.id === sid);
+      }
+
+      function addShelter() {
+        if (shelters.length >= 6) return;
+        shelters.push(makeShelter(shelters.length + 1));
+        activeShelterIdx = shelters.length - 1;
+        render();
+      }
+      function removeShelter(sid) {
+        shelters = shelters.filter((s) => s.id !== sid);
+        activeShelterIdx = Math.min(
+          activeShelterIdx,
+          Math.max(0, shelters.length - 1),
+        );
+        render();
+      }
+      function addItem(sid, zone) {
+        const s = getShelter(sid);
+        if (s) {
+          s.zones[zone].push(makeItem());
+          render();
+        }
+      }
+      function removeItem(sid, zone, iid) {
+        const s = getShelter(sid);
+        if (s) {
+          s.zones[zone] = s.zones[zone].filter((i) => i.id !== iid);
+          render();
+        }
+      }
+      function updateLabel(sid, zone, iid, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const item = s.zones[zone].find((i) => i.id === iid);
+        if (item) {
+          item.label = val;
+          updatePreview();
+        }
+      }
+      function updateSubitems(sid, zone, iid, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const item = s.zones[zone].find((i) => i.id === iid);
+        if (item) {
+          item.subitems = val;
+          updatePreview();
+        }
+      }
+      function updateShelterName(sid, val) {
+        const s = getShelter(sid);
+        if (s) {
+          s.name = val;
+          updatePreview();
+        }
+      }
+      function makeCol(n) {
+        return { id: uid(), name: `Col ${n}`, items: [] };
+      }
+      function addLCCol(sid) {
+        const s = getShelter(sid);
+        if (!s) return;
+        s.leftCenterCols.push(makeCol(s.leftCenterCols.length + 1));
+        render();
+      }
+      function addCRCol(sid) {
+        const s = getShelter(sid);
+        if (!s) return;
+        s.centerRightCols.push(makeCol(s.centerRightCols.length + 1));
+        render();
+      }
+      function removeDynCol(sid, group, cid) {
+        const s = getShelter(sid);
+        if (!s) return;
+        s[group] = s[group].filter((c) => c.id !== cid);
+        render();
+      }
+      function addColItem(sid, group, cid) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const col = s[group].find((c) => c.id === cid);
+        if (col) {
+          col.items.push(makeItem());
+          render();
+        }
+      }
+      function removeColItem(sid, group, cid, iid) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const col = s[group].find((c) => c.id === cid);
+        if (col) {
+          col.items = col.items.filter((i) => i.id !== iid);
+          render();
+        }
+      }
+      function updateColItemLabel(sid, group, cid, iid, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const col = s[group].find((c) => c.id === cid);
+        if (!col) return;
+        const item = col.items.find((i) => i.id === iid);
+        if (item) {
+          item.label = val;
+          updatePreview();
+        }
+      }
+      function updateColItemSubitems(sid, group, cid, iid, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const col = s[group].find((c) => c.id === cid);
+        if (!col) return;
+        const item = col.items.find((i) => i.id === iid);
+        if (item) {
+          item.subitems = val;
+          updatePreview();
+        }
+      }
+      function updateColName(sid, group, cid, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const col = s[group].find((c) => c.id === cid);
+        if (col) {
+          col.name = val;
+          updatePreview();
+        }
+      }
+      function getSub(s, key, subId) {
+        return ((s.subs || {})[key] || []).find((c) => c.id === subId);
+      }
+      function addSub(sid, key) {
+        const s = getShelter(sid);
+        if (!s) return;
+        if (!s.subs) s.subs = {};
+        if (!s.subs[key]) s.subs[key] = [];
+        s.subs[key].push(makeCol(s.subs[key].length + 1));
+        render();
+      }
+      function removeSub(sid, key, subId) {
+        const s = getShelter(sid);
+        if (!s || !s.subs || !s.subs[key]) return;
+        s.subs[key] = s.subs[key].filter((c) => c.id !== subId);
+        render();
+      }
+      function addSubItem(sid, key, subId) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const sub = getSub(s, key, subId);
+        if (sub) {
+          sub.items.push(makeItem());
+          render();
+        }
+      }
+      function removeSubItem(sid, key, subId, iid) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const sub = getSub(s, key, subId);
+        if (sub) {
+          sub.items = sub.items.filter((i) => i.id !== iid);
+          render();
+        }
+      }
+      function updateSubItemLabel(sid, key, subId, iid, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const sub = getSub(s, key, subId);
+        if (!sub) return;
+        const item = sub.items.find((i) => i.id === iid);
+        if (item) {
+          item.label = val;
+          updatePreview();
+        }
+      }
+      function updateSubItemSubitems(sid, key, subId, iid, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const sub = getSub(s, key, subId);
+        if (!sub) return;
+        const item = sub.items.find((i) => i.id === iid);
+        if (item) {
+          item.subitems = val;
+          updatePreview();
+        }
+      }
+      function updateSubName(sid, key, subId, val) {
+        const s = getShelter(sid);
+        if (!s) return;
+        const sub = getSub(s, key, subId);
+        if (sub) {
+          sub.name = val;
+          updatePreview();
+        }
+      }
+      function onHeadingColorChange() {
+        headingColor = document.getElementById("heading-color").value;
+        updatePreview();
+      }
+      function setActiveTab(idx) {
+        activeShelterIdx = idx;
+        updatePreview();
+      }
+
+      function serItems(items) {
+        return items
+          .filter((i) => i.label.trim())
+          .map((item) => {
+            const subs = item.subitems
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+            return subs.length
+              ? `----${item.label}: ${subs.join(", ")}`
+              : `----${item.label}`;
+          });
+      }
+      function generateText(shelterList) {
+        function serSubs(subs, key) {
+          return ((subs || {})[key] || []).flatMap((sub) => [
+            `--sub-col: ${sub.name}`,
+            ...serItems(sub.items),
+          ]);
+        }
+        return (shelterList || shelters)
+          .map((shelter) => {
+            const subs = shelter.subs || {};
+            const lines = [shelter.name || "Unnamed Shelter"];
+            const fwIts = shelter.zones["front wall"].filter((i) =>
+              i.label.trim(),
+            );
+            if (fwIts.length) {
+              lines.push(`--zone: front wall`);
+              lines.push(...serItems(fwIts));
+            }
+            const lwIts = shelter.zones["left wall"].filter((i) =>
+              i.label.trim(),
+            );
+            if (lwIts.length) {
+              lines.push(`--zone: left wall`);
+              lines.push(...serItems(lwIts));
+            }
+            lines.push(...serSubs(subs, "left wall"));
+            (shelter.leftCenterCols || []).forEach((col) => {
+              lines.push(`--lc-col: ${col.name}`);
+              lines.push(...serItems(col.items));
+              lines.push(...serSubs(subs, String(col.id)));
+            });
+            const cIts = shelter.zones["center"].filter((i) => i.label.trim());
+            if (cIts.length) {
+              lines.push(`--zone: center`);
+              lines.push(...serItems(cIts));
+            }
+            lines.push(...serSubs(subs, "center"));
+            (shelter.centerRightCols || []).forEach((col) => {
+              lines.push(`--cr-col: ${col.name}`);
+              lines.push(...serItems(col.items));
+              lines.push(...serSubs(subs, String(col.id)));
+            });
+            const rwIts = shelter.zones["right wall"].filter((i) =>
+              i.label.trim(),
+            );
+            if (rwIts.length) {
+              lines.push(`--zone: right wall`);
+              lines.push(...serItems(rwIts));
+            }
+            lines.push(...serSubs(subs, "right wall"));
+            const dwIts = shelter.zones["door wall"].filter((i) =>
+              i.label.trim(),
+            );
+            if (dwIts.length) {
+              lines.push(`--zone: door wall`);
+              lines.push(...serItems(dwIts));
+            }
+            return lines.join("\n");
+          })
+          .join("\n\n");
+      }
+
+      function parseText(text) {
+        const result = [];
+        let currentShelter = null,
+          currentZone = null,
+          currentDynCol = null,
+          currentSubCol = null,
+          currentSubKey = null;
+        for (const rawLine of text.split("\n")) {
+          const line = rawLine.trim();
+          if (!line) continue;
+          if (line.startsWith("----")) {
+            if (!currentShelter)
+              throw new Error("Item found before shelter declaration.");
+            if (!currentZone && !currentDynCol)
+              throw new Error("Item found before zone/column declaration.");
+            const itemRaw = line.slice(4).trim();
+            let label, subitems;
+            if (itemRaw.includes(":")) {
+              const idx = itemRaw.indexOf(":");
+              label = itemRaw.slice(0, idx).trim();
+              subitems = itemRaw.slice(idx + 1).trim();
+            } else {
+              label = itemRaw.trim();
+              subitems = "";
+            }
+            if (!label) throw new Error("Item has empty label.");
+            const newItem = { id: uid(), label, subitems };
+            if (currentSubCol) currentSubCol.items.push(newItem);
+            else if (currentDynCol) currentDynCol.items.push(newItem);
+            else currentShelter.zones[currentZone].push(newItem);
+          } else if (line.toLowerCase().startsWith("--sub-col:")) {
+            if (!currentShelter || (!currentZone && !currentDynCol))
+              throw new Error("Sub-column before zone/column declaration.");
+            currentSubCol = {
+              id: uid(),
+              name: line.slice(10).trim() || "Sub Col",
+              items: [],
+            };
+            if (!currentShelter.subs[currentSubKey])
+              currentShelter.subs[currentSubKey] = [];
+            currentShelter.subs[currentSubKey].push(currentSubCol);
+          } else if (line.toLowerCase().startsWith("--lc-col:")) {
+            if (!currentShelter)
+              throw new Error("Column directive before any shelter name.");
+            currentDynCol = {
+              id: uid(),
+              name: line.slice(9).trim() || "Col",
+              items: [],
+            };
+            currentShelter.leftCenterCols.push(currentDynCol);
+            currentZone = null;
+            currentSubCol = null;
+            currentSubKey = String(currentDynCol.id);
+          } else if (line.toLowerCase().startsWith("--cr-col:")) {
+            if (!currentShelter)
+              throw new Error("Column directive before any shelter name.");
+            currentDynCol = {
+              id: uid(),
+              name: line.slice(9).trim() || "Col",
+              items: [],
+            };
+            currentShelter.centerRightCols.push(currentDynCol);
+            currentZone = null;
+            currentSubCol = null;
+            currentSubKey = String(currentDynCol.id);
+          } else if (line.toLowerCase().startsWith("--zone:")) {
+            if (!currentShelter)
+              throw new Error("Zone directive before any shelter name.");
+            const zoneName = line.slice(7).trim().toLowerCase();
+            if (!ZONES.includes(zoneName))
+              throw new Error(
+                `Unknown zone: "${zoneName}". Valid: ${ZONES.join(", ")}`,
+              );
+            currentZone = zoneName;
+            currentDynCol = null;
+            currentSubCol = null;
+            currentSubKey = zoneName;
+          } else {
+            currentShelter = {
+              id: uid(),
+              name: line.trim(),
+              zones: {},
+              leftCenterCols: [],
+              centerRightCols: [],
+              subs: {},
+            };
+            ZONES.forEach((z) => (currentShelter.zones[z] = []));
+            result.push(currentShelter);
+            currentZone = null;
+            currentDynCol = null;
+            currentSubCol = null;
+            currentSubKey = null;
+          }
+        }
+        if (!result.length) throw new Error("No shelters found in text.");
+        return result;
+      }
+
+      function openImportModal() {
+        document.getElementById("import-modal").classList.add("open");
+        document.getElementById("import-error").textContent = "";
+        document.getElementById("import-textarea").value = "";
+        setTimeout(
+          () => document.getElementById("import-textarea").focus(),
+          50,
+        );
+      }
+      function closeImportModal() {
+        document.getElementById("import-modal").classList.remove("open");
+      }
+      function doImport() {
+        const text = document.getElementById("import-textarea").value;
+        const errEl = document.getElementById("import-error");
+        try {
+          const parsed = parseText(text);
+          if (parsed.length > 6)
+            throw new Error(`Max 6 shelters (got ${parsed.length}).`);
+          shelters = parsed;
+          activeShelterIdx = 0;
+          closeImportModal();
+          render();
+        } catch (e) {
+          errEl.textContent = "Error: " + e.message;
+        }
+      }
+
+      function downloadTxt() {
+        const blob = new Blob([generateText()], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "layout.txt";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+      function downloadPng() {
+        const shelter = shelters[activeShelterIdx];
+        if (!shelter) return;
+        const canvas = renderShelterToCanvas(shelter);
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL("image/png");
+        a.download =
+          (shelter.name || "shelter").toLowerCase().replace(/[^\w]+/g, "_") +
+          "_layout.png";
+        a.click();
+      }
+      function downloadAllPngs() {
+        shelters.forEach((shelter, i) => {
+          setTimeout(() => {
+            const canvas = renderShelterToCanvas(shelter);
+            const a = document.createElement("a");
+            a.href = canvas.toDataURL("image/png");
+            a.download =
+              (shelter.name || `shelter_${i + 1}`)
+                .toLowerCase()
+                .replace(/[^\w]+/g, "_") + "_layout.png";
+            a.click();
+          }, i * 250);
+        });
+      }
+
+      function escHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function contrastFg(hex) {
+        const r = parseInt(hex.slice(1, 3), 16),
+          g = parseInt(hex.slice(3, 5), 16),
+          b = parseInt(hex.slice(5, 7), 16);
+        return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5
+          ? "#1A1A2E"
+          : "#FFFFFF";
+      }
+
+      const THEME = {
+        bg: "#FFFFFF",
+        shelter_wall: "#1A1A2E",
+        wall_fill: "#FFFFFF",
+        rack_bg: "#FFFFFF",
+        rack_border: "#2C3E50",
+        cell_bg: "#F8F9FA",
+        cell_fg: "#1A1A2E",
+        cell_alt_bg: "#EBF0F7",
+        door_bg: "#E8EDF2",
+        door_fg: "#1A1A2E",
+        title_fg: "#1A1A2E",
+        subtitle_fg: "#5A6A7A",
+        grid_line: "#E8E8E8",
+      };
+      const C = {
+        MARGIN_X: 40,
+        MARGIN_TOP: 80,
+        MARGIN_BOTTOM: 20,
+        DOOR_W: 160,
+        DOOR_H: 36,
+        WALL_T: 8,
+        RACK_W: 160,
+        RACK_TITLE_H: 40,
+        CELL_H: 34,
+        RACK_MIN_H: 70,
+        AC_W: 130,
+        AC_H: 34,
+        H_SPACING: 20,
+        V_SPACING: 18,
+        INNER_PAD_X: 16,
+        INNER_PAD_TOP: 12,
+        INNER_PAD_BOT: 50,
+        CANVAS_W: 1100,
+      };
+
+      function isAC(label) {
+        const first = label.trim().split(/\s+/)[0].toUpperCase();
+        return first === "AC" || /^AC\d+$/i.test(first);
+      }
+      function itemHeight(item) {
+        if (isAC(item.label)) return C.AC_H;
+        const n = item.content ? item.content.length : 0;
+        return n > 0 ? C.RACK_TITLE_H + n * C.CELL_H : C.RACK_MIN_H;
+      }
+      function columnHeight(items) {
+        if (!items || !items.length) return 0;
+        return (
+          items.reduce((s, i) => s + itemHeight(i), 0) +
+          C.V_SPACING * (items.length - 1)
+        );
+      }
+      function computeCanvasHeight(shelter) {
+        const fi = shelter.zones["front wall"] || [];
+        const ac = fi.filter((i) => isAC(i.label)),
+          rk = fi.filter((i) => !isAC(i.label));
+        let fh = 0;
+        if (ac.length) fh += C.AC_H;
+        if (rk.length)
+          fh += (ac.length ? C.V_SPACING : 0) + Math.max(...rk.map(itemHeight));
+        const maxColH = Math.max(
+          0,
+          ...["left wall", "center", "right wall"].map((z) =>
+            columnHeight(shelter.zones[z] || []),
+          ),
+        );
+        const dwItems = shelter.zones["door wall"] || [];
+        const dwH = dwItems.length ? C.AC_H + C.V_SPACING : 0;
+        return Math.max(
+          600,
+          C.MARGIN_TOP +
+            C.WALL_T +
+            fh +
+            C.INNER_PAD_TOP +
+            C.INNER_PAD_BOT +
+            C.DOOR_H +
+            C.WALL_T +
+            C.MARGIN_BOTTOM +
+            maxColH +
+            C.V_SPACING +
+            dwH,
+        );
+      }
+      function prepItems(zone) {
+        return (zone || [])
+          .filter((i) => i.label.trim())
+          .map((i) => ({
+            label: i.label,
+            content: i.subitems
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean),
+          }));
+      }
+
+      function slotHeight(mainItems, subCols) {
+        const mh = columnHeight(mainItems);
+        if (!subCols || !subCols.length) return mh;
+        return mh + 2 * C.V_SPACING + Math.max(0, ...subCols.map(columnHeight));
+      }
+      function renderShelterToCanvas(shelter) {
+        const zones = {};
+        ZONES.forEach((z) => {
+          zones[z] = prepItems(shelter.zones[z]);
+        });
+        const subs = shelter.subs || {};
+        function prepSubs(key) {
+          return (subs[key] || []).map((c) => prepItems(c.items));
+        }
+        const slots = [
+          { items: zones["left wall"], subCols: prepSubs("left wall") },
+          ...(shelter.leftCenterCols || []).map((col) => ({
+            items: prepItems(col.items),
+            subCols: prepSubs(String(col.id)),
+          })),
+          { items: zones["center"], subCols: prepSubs("center") },
+          ...(shelter.centerRightCols || []).map((col) => ({
+            items: prepItems(col.items),
+            subCols: prepSubs(String(col.id)),
+          })),
+          { items: zones["right wall"], subCols: prepSubs("right wall") },
+        ];
+        const totalSlots = slots.length;
+        const hbg = headingColor,
+          hfg = contrastFg(hbg);
+
+        const fi = zones["front wall"],
+          ac = fi.filter((i) => isAC(i.label)),
+          rk = fi.filter((i) => !isAC(i.label));
+        let fh = 0;
+        if (ac.length) fh += C.AC_H;
+        if (rk.length)
+          fh += (ac.length ? C.V_SPACING : 0) + Math.max(...rk.map(itemHeight));
+        const maxGroupH = Math.max(
+          0,
+          ...slots.map((sl) => slotHeight(sl.items, sl.subCols)),
+        );
+        const dwItems = zones["door wall"];
+        const dwH = dwItems.length ? C.AC_H + C.V_SPACING : 0;
+        const canvasH = Math.max(
+          600,
+          C.MARGIN_TOP +
+            C.WALL_T +
+            fh +
+            C.INNER_PAD_TOP +
+            C.INNER_PAD_BOT +
+            C.DOOR_H +
+            C.WALL_T +
+            C.MARGIN_BOTTOM +
+            maxGroupH +
+            C.V_SPACING +
+            dwH,
+        );
+
+        const canvas = document.createElement("canvas");
+        canvas.width = C.CANVAS_W;
+        canvas.height = canvasH;
+        const ctx = canvas.getContext("2d");
+        const sx1 = C.MARGIN_X,
+          sy1 = C.MARGIN_TOP,
+          sx2 = C.CANVAS_W - C.MARGIN_X,
+          sy2 = canvasH - C.MARGIN_BOTTOM;
+        const wt = C.WALL_T,
+          ix1 = sx1 + wt,
+          iy1 = sy1 + wt,
+          ix2 = sx2 - wt;
+
+        ctx.fillStyle = THEME.bg;
+        ctx.fillRect(0, 0, C.CANVAS_W, canvasH);
+        ctx.strokeStyle = "#F0F0F0";
+        ctx.lineWidth = 1;
+        for (let gx = sx1; gx < sx2; gx += 40) {
+          ctx.beginPath();
+          ctx.moveTo(gx, sy1);
+          ctx.lineTo(gx, sy2);
+          ctx.stroke();
+        }
+        for (let gy = sy1; gy < sy2; gy += 40) {
+          ctx.beginPath();
+          ctx.moveTo(sx1, gy);
+          ctx.lineTo(sx2, gy);
+          ctx.stroke();
+        }
+        ctx.fillStyle = THEME.wall_fill;
+        ctx.strokeStyle = THEME.shelter_wall;
+        ctx.lineWidth = wt;
+        ctx.beginPath();
+        ctx.rect(sx1, sy1, sx2 - sx1, sy2 - sy1);
+        ctx.fill();
+        ctx.stroke();
+
+        const dX = Math.floor((sx1 + sx2) / 2 - C.DOOR_W / 2),
+          dY = sy2 - C.DOOR_H;
+        ctx.fillStyle = THEME.door_bg;
+        ctx.strokeStyle = THEME.shelter_wall;
+        ctx.lineWidth = 2;
+        ctx.fillRect(dX, dY, C.DOOR_W, C.DOOR_H + wt);
+        ctx.strokeRect(dX, dY, C.DOOR_W, C.DOOR_H + wt);
+        cText(ctx, "DOOR", dX, dY, C.DOOR_W, C.DOOR_H, THEME.door_fg, 13);
+
+        ctx.fillStyle = THEME.title_fg;
+        ctx.font = "500 28px 'IBM Plex Sans',sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+          shelter.name || "Unnamed Shelter",
+          C.CANVAS_W / 2,
+          C.MARGIN_TOP / 2,
+        );
+
+        renderFW(ctx, fi, iy1, ix1, ix2, hbg, hfg);
+
+        const colYS = iy1 + fh + C.INNER_PAD_TOP,
+          colYE = dY - C.INNER_PAD_BOT;
+        const iw = ix2 - ix1;
+        const slotW = Math.max(
+          80,
+          Math.floor(
+            (iw - 2 * C.INNER_PAD_X - C.H_SPACING * (totalSlots - 1)) /
+              totalSlots,
+          ),
+        );
+        slots.forEach((slot, i) => {
+          const x = ix1 + C.INNER_PAD_X + i * (slotW + C.H_SPACING);
+          renderVZ(ctx, slot.items, x, colYS, colYE, hbg, hfg, slotW);
+          if (slot.subCols.length) {
+            const mainH = columnHeight(slot.items);
+            const subYS = colYS + mainH + 2 * C.V_SPACING;
+            if (subYS < colYE) {
+              ctx.save();
+              ctx.strokeStyle = THEME.grid_line;
+              ctx.lineWidth = 1;
+              ctx.setLineDash([4, 3]);
+              ctx.beginPath();
+              ctx.moveTo(x, subYS - C.V_SPACING);
+              ctx.lineTo(x + slotW, subYS - C.V_SPACING);
+              ctx.stroke();
+              ctx.setLineDash([]);
+              ctx.restore();
+              const subW = Math.max(
+                50,
+                Math.floor(
+                  (slotW - C.H_SPACING * (slot.subCols.length - 1)) /
+                    slot.subCols.length,
+                ),
+              );
+              slot.subCols.forEach((subItems, j) => {
+                renderVZ(
+                  ctx,
+                  subItems,
+                  x + j * (subW + C.H_SPACING),
+                  subYS,
+                  colYE,
+                  hbg,
+                  hfg,
+                  subW,
+                );
+              });
+            }
+          }
+        });
+
+        renderDoorWall(ctx, dwItems, sx1, sx2, sy2, wt, hbg, hfg);
+        return canvas;
+      }
+
+      function cText(ctx, text, x, y, w, h, fill, size) {
+        ctx.save();
+        ctx.fillStyle = fill;
+        ctx.font = `${size < 14 ? 400 : 500} ${size}px 'IBM Plex Sans',sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const avail = w - 8;
+        while (text.length > 1 && ctx.measureText(text).width > avail)
+          text = text.slice(0, -1);
+        ctx.fillText(text, x + w / 2, y + h / 2);
+        ctx.restore();
+      }
+      function drawRack(ctx, item, x, y, hbg, hfg, w) {
+        w = w || C.RACK_W;
+        const n = item.content.length;
+        const totalH = n > 0 ? C.RACK_TITLE_H + n * C.CELL_H : C.RACK_MIN_H;
+        ctx.fillStyle = "#C8CDD5";
+        ctx.fillRect(x + 3, y + 3, w, totalH);
+        ctx.fillStyle = THEME.rack_bg;
+        ctx.fillRect(x, y, w, totalH);
+        ctx.fillStyle = hbg;
+        ctx.fillRect(x, y, w, C.RACK_TITLE_H);
+        cText(ctx, item.label, x, y, w, C.RACK_TITLE_H, hfg, 14);
+        item.content.forEach((sub, i) => {
+          const cy = y + C.RACK_TITLE_H + i * C.CELL_H;
+          ctx.fillStyle = i % 2 === 0 ? THEME.cell_bg : THEME.cell_alt_bg;
+          ctx.fillRect(x, cy, w, C.CELL_H);
+          ctx.strokeStyle = THEME.grid_line;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x, cy);
+          ctx.lineTo(x + w, cy);
+          ctx.stroke();
+          cText(ctx, sub, x, cy, w, C.CELL_H, THEME.cell_fg, 13);
+        });
+        ctx.strokeStyle = THEME.rack_border;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, w, totalH);
+        return totalH;
+      }
+      function drawAC(ctx, item, x, y, hbg, hfg, w) {
+        w = w || C.AC_W;
+        ctx.fillStyle = hbg;
+        ctx.fillRect(x, y, w, C.AC_H);
+        ctx.strokeStyle = "#0D4D2A";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, w, C.AC_H);
+        cText(ctx, item.label, x, y, w, C.AC_H, hfg, 13);
+        return C.AC_H;
+      }
+      function renderFW(ctx, items, y, ix1, ix2, hbg, hfg) {
+        if (!items.length) return;
+        const ac = items.filter((i) => isAC(i.label)),
+          rk = items.filter((i) => !isAC(i.label)),
+          iw = ix2 - ix1;
+        if (ac.length) {
+          const tw = ac.length * C.AC_W + C.H_SPACING * (ac.length - 1);
+          let cx = ix1 + Math.max(0, Math.floor((iw - tw) / 2));
+          ac.forEach((item) => {
+            drawAC(ctx, item, cx, y, hbg, hfg);
+            cx += C.AC_W + C.H_SPACING;
+          });
+        }
+        if (rk.length) {
+          const ry = y + (ac.length ? C.AC_H + C.V_SPACING : 0);
+          const tw = rk.length * C.RACK_W + C.H_SPACING * (rk.length - 1);
+          let cx = ix1 + Math.max(0, Math.floor((iw - tw) / 2));
+          rk.forEach((item) => {
+            drawRack(ctx, item, cx, ry, hbg, hfg);
+            cx += C.RACK_W + C.H_SPACING;
+          });
+        }
+      }
+      function renderVZ(ctx, items, x, yS, yE, hbg, hfg, w) {
+        if (!items || !items.length) return;
+        w = w || C.RACK_W;
+        let cy = yS;
+        items.forEach((item) => {
+          const ih = itemHeight(item);
+          if (cy + ih > yE) {
+            const avail = yE - cy - C.V_SPACING;
+            if (avail > 20) {
+              ctx.fillStyle = THEME.rack_bg;
+              ctx.fillRect(x, cy, w, avail);
+              ctx.strokeStyle = THEME.rack_border;
+              ctx.lineWidth = 1;
+              ctx.strokeRect(x, cy, w, avail);
+              cText(ctx, "▼ more…", x, cy, w, avail, THEME.subtitle_fg, 11);
+            }
+            return;
+          }
+          if (isAC(item.label)) drawAC(ctx, item, x, cy, hbg, hfg, w);
+          else drawRack(ctx, item, x, cy, hbg, hfg, w);
+          cy += ih + C.V_SPACING;
+        });
+      }
+
+      function renderDoorWall(ctx, items, sx1, sx2, sy2, wt, hbg, hfg) {
+        if (!items || !items.length) return;
+        // Items sit just above the bottom wall, split either side of the door
+        const dX = Math.floor((sx1 + sx2) / 2 - C.DOOR_W / 2);
+        const y = sy2 - wt - C.AC_H - 6;
+        const leftItems = [],
+          rightItems = [];
+        items.forEach((item, i) => {
+          if (i % 2 === 0) leftItems.push(item);
+          else rightItems.push(item);
+        });
+        // Left side: stack right-to-left from door
+        let cx = dX - C.H_SPACING;
+        [...leftItems].reverse().forEach((item) => {
+          const w = isAC(item.label) ? C.AC_W : C.RACK_W;
+          cx -= w;
+          if (isAC(item.label)) drawAC(ctx, item, cx, y, hbg, hfg, w);
+          else drawRack(ctx, item, cx, y, hbg, hfg, w);
+          cx -= C.H_SPACING;
+        });
+        // Right side: stack left-to-right from door
+        cx = dX + C.DOOR_W + C.H_SPACING;
+        rightItems.forEach((item) => {
+          const w = isAC(item.label) ? C.AC_W : C.RACK_W;
+          if (isAC(item.label)) drawAC(ctx, item, cx, y, hbg, hfg, w);
+          else drawRack(ctx, item, cx, y, hbg, hfg, w);
+          cx += w + C.H_SPACING;
+        });
+      }
+      function renderSubColsUI(s, key) {
+        const subCols = (s.subs || {})[key] || [];
+        let h = `<div class="subcols-area">`;
+        subCols.forEach((sub) => {
+          h += `<div class="subcol"><div class="subcol-hdr"><input class="dyn-col-name" type="text" value="${escHtml(sub.name)}" oninput="updateSubName(${s.id},'${key}',${sub.id},this.value)" /><button class="remove-btn" onclick="removeSub(${s.id},'${key}',${sub.id})" style="font-size:13px">✕</button></div>`;
+          if (!sub.items.length) {
+            h += `<div class="empty-zone">empty</div>`;
+          } else {
+            sub.items.forEach((item) => {
+              h += `<div class="item-row"><div class="item-inputs"><input class="field" type="text" placeholder="Label" value="${escHtml(item.label)}" oninput="updateSubItemLabel(${s.id},'${key}',${sub.id},${item.id},this.value)" /><input class="field subitems" type="text" placeholder="sub-items" value="${escHtml(item.subitems)}" oninput="updateSubItemSubitems(${s.id},'${key}',${sub.id},${item.id},this.value)" /></div><button class="remove-btn" onclick="removeSubItem(${s.id},'${key}',${sub.id},${item.id})">✕</button></div>`;
+            });
+          }
+          h += `<button class="add-sub-item-btn" onclick="addSubItem(${s.id},'${key}',${sub.id})">+ item</button></div>`;
+        });
+        h += `<button class="add-sub-btn" onclick="addSub(${s.id},'${key}')">+ sub-col</button></div>`;
+        return h;
+      }
+      function renderZone(s, zone, extraClass) {
+        const items = s.zones[zone],
+          zclass = ZONE_CLASS[zone];
+        const cls = extraClass ? ` ${extraClass}` : "";
+        let html = `<div class="zone-section${cls}"><div class="zone-label"><span class="zone-name ${zclass}">${zone}</span><button class="add-item-btn" onclick="addItem(${s.id},'${zone}')" title="Add item">+</button></div>`;
+        if (!items.length) {
+          html += `<div class="empty-zone">empty</div>`;
+        } else {
+          items.forEach((item) => {
+            html += `<div class="item-row"><div class="item-inputs"><input class="field" type="text" placeholder="Label (e.g. Rack 1, AC1, PDU)" value="${escHtml(item.label)}" oninput="updateLabel(${s.id},'${zone}',${item.id},this.value)" /><input class="field subitems" type="text" placeholder="sub-items: U1, U2, U3" value="${escHtml(item.subitems)}" oninput="updateSubitems(${s.id},'${zone}',${item.id},this.value)" /></div><button class="remove-btn" onclick="removeItem(${s.id},'${zone}',${item.id})" title="Remove">✕</button></div>`;
+          });
+        }
+        if (extraClass === "col-zone") html += renderSubColsUI(s, zone);
+        return html + `</div>`;
+      }
+      function renderDynCol(s, group, col) {
+        const key = String(col.id);
+        let html = `<div class="zone-section col-zone"><div class="zone-label"><input class="dyn-col-name" type="text" value="${escHtml(col.name)}" oninput="updateColName(${s.id},'${group}',${col.id},this.value)" /><div style="display:flex;gap:2px"><button class="add-item-btn" onclick="addColItem(${s.id},'${group}',${col.id})" title="Add item">+</button><button class="remove-btn" onclick="removeDynCol(${s.id},'${group}',${col.id})" title="Remove column" style="font-size:14px">✕</button></div></div>`;
+        if (!col.items.length) {
+          html += `<div class="empty-zone">empty</div>`;
+        } else {
+          col.items.forEach((item) => {
+            html += `<div class="item-row"><div class="item-inputs"><input class="field" type="text" placeholder="Label" value="${escHtml(item.label)}" oninput="updateColItemLabel(${s.id},'${group}',${col.id},${item.id},this.value)" /><input class="field subitems" type="text" placeholder="sub-items: U1, U2" value="${escHtml(item.subitems)}" oninput="updateColItemSubitems(${s.id},'${group}',${col.id},${item.id},this.value)" /></div><button class="remove-btn" onclick="removeColItem(${s.id},'${group}',${col.id},${item.id})" title="Remove">✕</button></div>`;
+          });
+        }
+        html += renderSubColsUI(s, key);
+        return html + `</div>`;
+      }
+
+      function render() {
+        const container = document.getElementById("shelters-container");
+        let html = "";
+        shelters.forEach((s, i) => {
+          const bodyHtml = `<div class="zone-full">${renderZone(s, "front wall")}</div><div class="cols-row">${renderZone(s, "left wall", "col-zone")}<button class="add-col-btn" onclick="addLCCol(${s.id})" title="Add column between Left and Center">+</button>${(s.leftCenterCols || []).map((col) => renderDynCol(s, "leftCenterCols", col)).join("")}${renderZone(s, "center", "col-zone")}<button class="add-col-btn" onclick="addCRCol(${s.id})" title="Add column between Center and Right">+</button>${(s.centerRightCols || []).map((col) => renderDynCol(s, "centerRightCols", col)).join("")}${renderZone(s, "right wall", "col-zone")}</div><div class="zone-full">${renderZone(s, "door wall")}</div>`;
+          html += `<div class="shelter-card"><div class="shelter-header"><span class="shelter-index">${String(i + 1).padStart(2, "0")}</span><input class="shelter-name-input" type="text" placeholder="Shelter name" value="${escHtml(s.name)}" oninput="updateShelterName(${s.id},this.value)" /></div><div class="shelter-body">${bodyHtml}</div>`;
+          if (shelters.length > 1)
+            html += `<div class="shelter-footer"><button class="remove-shelter-btn" onclick="removeShelter(${s.id})">✕ remove shelter</button></div>`;
+          html += `</div>`;
+        });
+        container.innerHTML = html;
+        const btn = document.getElementById("add-shelter-btn");
+        btn.disabled = shelters.length >= 6;
+        btn.textContent = `+ add shelter (${shelters.length}/6)`;
+        const tabs = document.getElementById("shelter-tabs");
+        tabs.innerHTML = shelters
+          .map(
+            (s, i) =>
+              `<button class="shelter-tab ${i === activeShelterIdx ? "active" : ""}" onclick="setActiveTab(${i})">${escHtml(s.name || `Shelter ${i + 1}`)}</button>`,
+          )
+          .join("");
+        updatePreview();
+      }
+
+      function updatePreview() {
+        const tabs = document.getElementById("shelter-tabs");
+        if (tabs)
+          tabs.innerHTML = shelters
+            .map(
+              (s, i) =>
+                `<button class="shelter-tab ${i === activeShelterIdx ? "active" : ""}" onclick="setActiveTab(${i})">${escHtml(s.name || `Shelter ${i + 1}`)}</button>`,
+            )
+            .join("");
+        const shelter = shelters[activeShelterIdx];
+        if (!shelter) return;
+        const rendered = renderShelterToCanvas(shelter);
+        const preview = document.getElementById("preview-canvas");
+        preview.width = rendered.width;
+        preview.height = rendered.height;
+        preview.getContext("2d").drawImage(rendered, 0, 0);
+      }
+
+      document
+        .getElementById("import-modal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeImportModal();
+        });
+      addShelter();
+    </script>
+  </body>
+</html>
